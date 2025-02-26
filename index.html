@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عداد تسبيح </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      direction: rtl;
+    }
+
+    .counter-container {
+      width: 60%;
+      margin: auto;
+    }
+
+    .counter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #000;
+      border-radius: 5px;
+    }
+
+    .counter input {
+      width: 150px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .counter button {
+      font-size: 18px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .add-counter {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>عداد متعدد الخانات</h1>
+  <div class="counter-container" id="counterContainer"></div>
+
+  <button class="add-counter" onclick="addCounter()">إضافة عداد جديد</button>
+
+  <script>
+    let counters = JSON.parse(localStorage.getItem("counters")) || [];
+
+    function renderCounters() {
+      const container = document.getElementById("counterContainer");
+      container.innerHTML = "";
+      counters.forEach((counter, index) => {
+        const counterElement = document.createElement("div");
+        counterElement.className = "counter";
+        counterElement.innerHTML = `
+                    <input type="text" value="${counter.name}" oninput="updateName(${index}, this.value)">
+                    <button onclick="decrease(${index})">-</button>
+                    <span>${counter.value}</span>
+                    <button onclick="increase(${index})">+</button>
+                    <button onclick="deleteCounter(${index})">🗑</button>
+                `;
+        container.appendChild(counterElement);
+      });
+      saveCounters();
+    }
+
+    function addCounter() {
+      counters.push({
+        name: "عداد جديد",
+        value: 0
+      });
+      renderCounters();
+    }
+
+    function increase(index) {
+      counters[index].value++;
+      renderCounters();
+    }
+
+    function decrease(index) {
+      counters[index].value = Math.max(0, counters[index].value - 1);
+      renderCounters();
+    }
+
+    function updateName(index, newName) {
+      counters[index].name = newName;
+      saveCounters();
+    }
+
+    function deleteCounter(index) {
+      counters.splice(index, 1);
+      renderCounters();
+    }
+
+    function saveCounters() {
+      localStorage.setItem("counters", JSON.stringify(counters));
+    }
+    renderCounters();
+  </script>
+
+</body>
+
+</html>
